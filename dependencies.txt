@@ -1,0 +1,4 @@
+pip install opencv-contrib-python
+pip install opencv-utils
+pip install opencv..
+pip install numpy
