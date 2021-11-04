@@ -1,5 +1,6 @@
 #https://www.digitalocean.com/community/tutorials/how-to-detect-and-extra
 #just watch that sheet above, learn some
+#https://towardsdatascience.com/object-detection-with-tensorflow-model-and-opencv-d839f3e42849
 
 import cv2
 import sys
