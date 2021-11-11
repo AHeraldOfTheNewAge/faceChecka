@@ -8,12 +8,14 @@ import numpy
 import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import json
+import tensorflow_text
 
 width = 1028
 height = 1028
 
 #Load image by Opencv2
-img = cv2.imread('image_2.jpg')
+img = cv2.imread('image.jpg')
 #Resize to respect the input_shape
 inp = cv2.resize(img, (width , height ))
 
@@ -35,8 +37,6 @@ detector = hub.load("https://tfhub.dev/tensorflow/efficientdet/lite2/detection/1
 labels = pd.read_csv('labels.csv', sep=';', index_col='ID')
 labels = labels['OBJECT (2017 REL.)']
 
-
-
 # Creating prediction
 boxes, scores, classes, num_detections = detector(rgb_tensor)
 
@@ -46,19 +46,20 @@ pred_labels = [labels[i] for i in pred_labels]
 pred_boxes = boxes.numpy()[0].astype('int')
 pred_scores = scores.numpy()[0]
 
-# Putting the boxes and labels on the image
-for score, (ymin,xmin,ymax,xmax), label in zip(pred_scores, pred_boxes, pred_labels):
-    print('batch')
-    print(score)
-    print(label)
+resultArr = []
 
+# Putting the boxes and labels on the image
+for score, label in zip(pred_scores, pred_labels):
     if score < 0.5:
         continue
+    #de facut pe 0.4 ?o
 
-    score_txt = f'{100 * round(score)}%'
-    img_boxes = cv2.rectangle(rgb,(xmin, ymax),(xmax, ymin),(0,255,0),2)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(img_boxes, label,(xmin, ymax-10), font, 1.5, (255,0,0), 2, cv2.LINE_AA)
-    cv2.putText(img_boxes,score_txt,(xmax, ymax-10), font, 1.5, (255,0,0), 2, cv2.LINE_AA)
+    resultArr.append([label, str(score)[:4]])
+    #we convert float32 to string + we only keep the first 4 characters
+    #because we dont need to store that much of a confidence rate
 
-# plt.imshow(img_boxes)
+print(json.dumps(resultArr))
+
+
+
+#
